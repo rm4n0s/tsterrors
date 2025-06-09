@@ -97,6 +97,9 @@ func (e *Error) Error() string {
 // Set is the method that is needed to insert the original error inside the Error's object.
 // The method will panic if the tsterrors.Error object is not empty.
 func (e *Error) Set(et ErrorTag, err error) error {
+	if err == nil {
+		return nil
+	}
 	if e.State != StateEmpty {
 		panic("don't reset errors in Error object")
 	}
@@ -111,6 +114,9 @@ func (e *Error) Set(et ErrorTag, err error) error {
 // Pkg is the method that will insert another Error's object.
 // The method will panic if the error is not a tsterrors.Error or it is not empty.
 func (e *Error) Pkg(err error) error {
+	if err == nil {
+		return nil
+	}
 	terr, ok := err.(*Error)
 	if !ok {
 		panic("error is not created by 'tsterrors'")

@@ -75,6 +75,18 @@ func TestPkgFailOnNonIsEmpty(t *testing.T) {
 	err2.Pkg(err1)
 }
 
+func TestSetAndPkgOnNil(t *testing.T) {
+	err1 := New(FunctionName("function_1"))
+	err := err1.Set("InvestmentLost", nil)
+	if err != nil {
+		t.Error("it should be nil")
+	}
+	err = err1.Pkg(nil)
+	if err != nil {
+		t.Error("it should be nil")
+	}
+}
+
 func TestRoute(t *testing.T) {
 	var errInvestmentLost ErrorTag = "investment-lost"
 
