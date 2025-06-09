@@ -26,8 +26,7 @@ var fNf2 tsterrors.FunctionName = "f2"
 
 func f2() error {
 	terr := tsterrors.New(fNf2)
-	err := f1()
-	return terr.Pkg(err)
+	return terr.Pkg(f1())
 
 }
 
@@ -35,8 +34,7 @@ var fNf3 tsterrors.FunctionName = "f3"
 
 func f3() error {
 	terr := tsterrors.New(fNf3)
-	err := f1()
-	return terr.Pkg(err)
+	return terr.Pkg(f1())
 }
 
 var fNf4 tsterrors.FunctionName = "f4"
