@@ -11,7 +11,9 @@ import (
 func main() {
 	var errInvestmentLost tsterrors.ErrorTag = "InvestmentLost"
 
-	// from microservice 1
+	// microservice 2 does a HTTP request to microservice 1
+	// microservice 1 runs function_4() but it fails at function_1()
+	// The error propagates from function_1() to function_4()
 	err1 := tsterrors.New(tsterrors.FunctionName("function_1"))
 	err1.Set(errInvestmentLost, errors.New("investment lost"))
 	err2 := tsterrors.New(tsterrors.FunctionName("function_2"))
@@ -21,12 +23,15 @@ func main() {
 	err4 := tsterrors.New(tsterrors.FunctionName("function_4"))
 	err4.Pkg(err3)
 
+	// microservice 1 transforms the error from function_4() to json
 	out, _ := json.Marshal(err4)
 
-	// send error to microservice 2 as a response to HTTP Request
+	// microservice 1 sends the json to microservice 2 as a response
+	// microservice 2 transforms the json to an error
 	in := &tsterrors.Error{}
 	json.Unmarshal(out, &in)
 
+	// microservice 2 propagates the error to function_7()
 	err5 := tsterrors.New(tsterrors.FunctionName("function_5"))
 	err5.Pkg(in)
 	err6 := tsterrors.New(tsterrors.FunctionName("function_6"))
@@ -39,17 +44,17 @@ func main() {
 	out, _ = json.Marshal(err7)
 	fmt.Println("Json", string(out))
 
-	// then the sysadmin gives the json to QA engineer to reproduce the bug
-	// the engineer puts the json in Error object
+	// the sysadmin receives the email and copy pastes the json to QA engineer to reproduce the error in his/her test enviroment
 
+	// the engineer puts the json in Error object
 	in = &tsterrors.Error{}
 	json.Unmarshal(out, &in)
 
-	// then the engineer produces, from Go's REPL, a code to validate similar errors
+	// so he/she can use the ProduceValidationCode utility to create the validation code for his/her test code
 	code, _ := tsterrors.ProduceValidationCode(in)
 	fmt.Println("Code: ", code)
 
-	// the engineer copies the code into a test and tries to reproduce with different inputs
+	// the engineer copies the code into a test and tries to reproduce the same error with different inputs
 	TestWeirdBug := func() {
 		reproducableError := err7
 		var function7 tsterrors.FunctionName = "function_7"
